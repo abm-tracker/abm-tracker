@@ -62,11 +62,13 @@ function getBadges(status, comments, redSince) {
 
 // ── Supabase helpers ──────────────────────────────────────────────────────────
 async function dbGet(table) {
-  const { data } = await supabase.from(table).select("value").eq("id", "global").single();
+  const { data, error } = await supabase.from(table).select("value").eq("id", "global").maybeSingle();
+  if (error) console.error(`dbGet error (${table}):`, error);
   return data ? data.value : null;
 }
 async function dbSet(table, value) {
-  await supabase.from(table).upsert({ id: "global", value, updated_at: new Date().toISOString() });
+  const { error } = await supabase.from(table).upsert({ id: "global", value, updated_at: new Date().toISOString() });
+  if (error) console.error(`dbSet error (${table}):`, error);
 }
 
 // ── Login ─────────────────────────────────────────────────────────────────────
