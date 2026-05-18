@@ -243,11 +243,14 @@ function HealthCircle({pct}){
 // ── Metrics section ───────────────────────────────────────────────────────────
 function DivisionMetricsSection({division,metricsHistory,assignedTo,currentUser,isAdmin,onEnterMetrics}){
   const [showHistory,setShowHistory]=useState(false);
-  const divMetrics=DIVISION_METRICS[division]||[],weeks=getLast26Weeks(),currentWeek=getWeekKey();
-  const safeHistory=(metricsHistory&&typeof metricsHistory==="object")?metricsHistory:{};
-  const currentData=(safeHistory[currentWeek]&&typeof safeHistory[currentWeek]==="object")?safeHistory[currentWeek]:{};
-  const hasData=divMetrics.some(dm=>currentData[dm.key]!==""&&currentData[dm.key]!==undefined);
-  const canEdit=currentUser===assignedTo||isAdmin;
+  const divMetrics=DIVISION_METRICS[division]||[];
+  const weeks=getLast26Weeks();
+  const currentWeek=getWeekKey();
+  const safeHistory = (metricsHistory && typeof metricsHistory==="object" && !Array.isArray(metricsHistory)) ? metricsHistory : {};
+  const currentData = (safeHistory[currentWeek] && typeof safeHistory[currentWeek]==="object") ? safeHistory[currentWeek] : {};
+  const hasData=divMetrics.some(dm=>currentData[dm.key]!=null&&currentData[dm.key]!=="");
+  // Allow entry if: user is admin OR user is assigned to this division OR any logged-in user (if assignedTo is blank)
+  const canEdit = isAdmin || currentUser===assignedTo || !assignedTo;
   return (
     <div className="mb-3 bg-slate-800/40 rounded-lg border border-slate-700/50">
       <div className="flex items-center justify-between px-3 py-2 border-b border-slate-700/50">
