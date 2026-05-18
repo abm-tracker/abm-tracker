@@ -243,7 +243,9 @@ function HealthCircle({pct}){
 // ── Metrics section ───────────────────────────────────────────────────────────
 function DivisionMetricsSection({division,metricsHistory,assignedTo,currentUser,isAdmin,onEnterMetrics}){
   const [showHistory,setShowHistory]=useState(false);
-  const divMetrics=DIVISION_METRICS[division]||[],weeks=getLast26Weeks(),currentWeek=getWeekKey(),currentData=metricsHistory[currentWeek]||{};
+  const divMetrics=DIVISION_METRICS[division]||[],weeks=getLast26Weeks(),currentWeek=getWeekKey();
+  const safeHistory=(metricsHistory&&typeof metricsHistory==="object")?metricsHistory:{};
+  const currentData=(safeHistory[currentWeek]&&typeof safeHistory[currentWeek]==="object")?safeHistory[currentWeek]:{};
   const hasData=divMetrics.some(dm=>currentData[dm.key]!==""&&currentData[dm.key]!==undefined);
   const canEdit=currentUser===assignedTo||isAdmin;
   return (
